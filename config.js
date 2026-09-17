@@ -1,0 +1,1 @@
+window.APP_CONFIG={API_URL:"https://script.google.com/macros/s/AKfycbzjwid0s9-wfsjbQeVIu9cY1hZVeOX02KmMZUuhH9kNnfSP_HM20D-gvQ1tLWOuSnExkQ/exec",DEMO_ROLE_PASSWORDS:{teacher:"256901",inspector:"256902",admin:"256999"}};

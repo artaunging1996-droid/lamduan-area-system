@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ระบบเขตพื้นที่รับผิดชอบ | โรงเรียนลำดวนพิทยาคม</title>
+<style>
+:root{--b:#086cc8;--d:#064b92;--c:#23a8e5;--bg:#f3f9fe;--ink:#16354f;--mut:#70869a;--line:#dceaf5;--ok:#169b63}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,"Noto Sans Thai",sans-serif;background:linear-gradient(145deg,#eef8ff,#fff);color:var(--ink)}
+header{background:linear-gradient(120deg,var(--d),var(--b),var(--c));color:#fff;padding:24px 16px 70px}.wrap{max-width:1180px;margin:auto}
+.brand{display:flex;gap:14px;align-items:center}.logo{width:58px;height:58px;border-radius:18px;background:#fff;color:var(--d);display:grid;place-items:center;font-weight:900;box-shadow:0 10px 25px #00366c45}
+h1{margin:0;font-size:clamp(22px,4vw,32px)}.sub{opacity:.9}main{margin-top:-45px;padding:0 14px 50px}
+.nav,.stats{display:grid;gap:11px}.nav{grid-template-columns:repeat(3,1fr);margin-bottom:13px}.stats{grid-template-columns:repeat(4,1fr);margin-bottom:13px}
+.card,.nav button,.stat{background:#fff;border:1px solid var(--line);border-radius:19px;box-shadow:0 10px 28px #0a639a12}.nav button{padding:16px;font-weight:850;color:var(--d);cursor:pointer;font-size:14px}.stat{padding:15px}.stat b{display:block;font-size:25px;color:var(--b)}.stat span{font-size:12px;color:var(--mut)}
+.layout{display:grid;grid-template-columns:1.05fr .95fr;gap:14px}.card{padding:18px}h2{margin:0 0 5px}.desc{color:var(--mut);font-size:13px;margin-bottom:12px}.map{width:100%;border-radius:15px;border:1px solid var(--line)}
+.areas{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.area{padding:12px 5px;border:1px solid var(--line);border-radius:12px;background:#fbfdff;text-align:center;font-weight:800;cursor:pointer}.area:hover{background:#edf8ff;border-color:#73bcec}
+table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:10px;border-bottom:1px solid #edf2f6;text-align:left}th{color:var(--mut)}.pill{padding:4px 8px;border-radius:99px;font-weight:800;font-size:11px}.yes{background:#e0f7ec;color:#087849}.no{background:#fff1df;color:#9b650e}.blue{background:#e4f3ff;color:#096bb4}.orange{background:#fff0dd;color:#a45e00}.gray{background:#eef2f5;color:#607181}
+.modal{position:fixed;inset:0;background:#0a294b99;display:none;align-items:center;justify-content:center;padding:12px;z-index:20}.modal.show{display:flex}.box{width:min(700px,100%);max-height:94vh;overflow:auto;background:#fff;border-radius:22px;padding:20px;box-shadow:0 30px 80px #001a334d}
+.head{display:flex;justify-content:space-between;align-items:center;gap:10px}.x{border:0;border-radius:50%;width:36px;height:36px;background:#eef5fa;font-size:20px;cursor:pointer}
+label{display:block;font-size:13px;font-weight:800;margin:10px 0 5px}input,select,textarea{width:100%;padding:11px;border:1px solid #ccddea;border-radius:11px;font:inherit}.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.info{background:#eef8ff;border-radius:12px;padding:11px;margin:12px 0;font-size:13px}.criterion{display:grid;grid-template-columns:1fr 135px;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid #edf2f6}
+.btn{border:0;border-radius:12px;padding:12px 17px;background:linear-gradient(120deg,var(--d),var(--b));color:#fff;font-weight:850;cursor:pointer}.actions{display:flex;justify-content:flex-end;gap:8px;margin-top:14px}
+#status{position:fixed;bottom:15px;left:50%;transform:translateX(-50%);background:#173b59;color:#fff;padding:10px 15px;border-radius:99px;display:none;z-index:30;font-size:13px}
+@media(max-width:800px){.layout{grid-template-columns:1fr}.stats{grid-template-columns:1fr 1fr}.areas{grid-template-columns:repeat(3,1fr)}}@media(max-width:520px){.nav{grid-template-columns:1fr}.g2{grid-template-columns:1fr}.criterion{grid-template-columns:1fr 110px}}
+
+.loginScreen{position:fixed;inset:0;background:linear-gradient(145deg,#eaf7ff,#fff);z-index:100;display:grid;place-items:center;padding:18px}
+.loginBox{width:min(470px,100%);background:#fff;border:1px solid var(--line);border-radius:26px;padding:26px;box-shadow:0 25px 70px #075b9625}
+.loginLogo{width:70px;height:70px;border-radius:22px;background:linear-gradient(130deg,var(--d),var(--b));color:#fff;display:grid;place-items:center;font-weight:950;margin:auto;font-size:20px}
+.roleBtns{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:18px 0}.roleBtn{padding:13px 7px;border:1px solid var(--line);border-radius:13px;background:#f8fcff;font-weight:850;cursor:pointer}.roleBtn.sel{background:#e9f6ff;border-color:#62b4ea;color:var(--d)}
+.userbar{display:flex;gap:8px;align-items:center;margin-left:auto}.roleTag{background:#ffffff25;padding:7px 10px;border-radius:99px;font-size:12px;font-weight:800}.logout{border:1px solid #ffffff55;background:#ffffff18;color:#fff;border-radius:10px;padding:7px 10px;cursor:pointer}
+.adminOnly,.inspectorOnly{display:none}
+.pinDots{display:flex;justify-content:center;gap:12px;margin:16px 0 18px;font-size:28px;color:#1677c8;font-weight:900}
+.pinPad{display:grid;grid-template-columns:repeat(3,78px);gap:10px;justify-content:center;margin:auto}
+.pinPad button{height:60px;border:1px solid #cfe4f3;border-radius:17px;background:#f7fbff;font-size:25px;font-weight:900;color:#16364c;cursor:pointer;box-shadow:0 4px 12px #075b9610}
+.pinPad button:active{transform:scale(.96);background:#e7f5ff}.pinPad .del{background:#fff5e8;color:#9a5b00}.pinPad .ok{background:#147fc3;color:white}
+</style></head>
+<body>
+<div class="loginScreen" id="loginScreen"><div class="loginBox">
+<div class="loginLogo">ล.พ.</div><h2 style="text-align:center;margin-top:14px">เข้าสู่ระบบเขตพื้นที่รับผิดชอบ</h2>
+<div class="desc" style="text-align:center">โรงเรียนลำดวนพิทยาคม • เลือกประเภทผู้ใช้งาน</div>
+<div class="roleBtns">
+<button class="roleBtn sel" data-role="teacher" onclick="pickRole('teacher',this)">👩‍🏫<br>ครู</button>
+<button class="roleBtn" data-role="inspector" onclick="pickRole('inspector',this)">🔎<br>ผู้ตรวจ</button>
+<button class="roleBtn" data-role="admin" onclick="pickRole('admin',this)">⚙️<br>แอดมิน</button>
+</div>
+<label style="display:block;text-align:center">กรอก PIN 6 หลัก</label>
+<input id="loginPassword" type="password" maxlength="6" autocomplete="off" tabindex="-1" style="position:absolute;left:-9999px">
+<div id="pinDots" class="pinDots">
+  <span>○</span><span>○</span><span>○</span><span>○</span><span>○</span><span>○</span>
+</div>
+<div class="pinPad">
+  <button type="button" onclick="pinKey('1')">1</button><button type="button" onclick="pinKey('2')">2</button><button type="button" onclick="pinKey('3')">3</button>
+  <button type="button" onclick="pinKey('4')">4</button><button type="button" onclick="pinKey('5')">5</button><button type="button" onclick="pinKey('6')">6</button>
+  <button type="button" onclick="pinKey('7')">7</button><button type="button" onclick="pinKey('8')">8</button><button type="button" onclick="pinKey('9')">9</button>
+  <button type="button" class="del" onclick="pinBack()">⌫</button><button type="button" onclick="pinKey('0')">0</button><button type="button" class="ok" onclick="login()">✓</button>
+</div>
+<div class="desc" style="margin-top:13px;text-align:center">PIN 6 หลักแยกตามบทบาท • เมื่อเชื่อม Apps Script จะตรวจ PIN ที่ฝั่งระบบหลังบ้าน</div>
+</div></div>
+<header><div class="wrap brand"><div class="logo">ล.พ.</div><div><h1>ระบบเขตพื้นที่รับผิดชอบ</h1><div class="sub">โรงเรียนลำดวนพิทยาคม • <span id="headerTerm">ภาคเรียนที่ 2 ปีการศึกษา 2569</span></div></div>
+<div class="userbar"><span class="roleTag" id="roleTag"></span><button class="logout" onclick="logout()">ออกจากระบบ</button></div>
+</div></header>
+<main class="wrap">
+<div class="nav">
+<button>🗺️ แผนผังทำความสะอาด</button>
+<button id="checkBtn" onclick="openM('checkM')">📍 ครู Check In</button>
+<button id="evalBtn" class="inspectorOnly" onclick="openEval()">🔎 ผู้ตรวจประเมินพื้นที่</button>
+</div>
+<div class="stats" id="statsPanel"><div class="stat"><b>14</b><span>เขตพื้นที่ทั้งหมด</span></div><div class="stat"><b id="checkN">0</b><span>Check In วันนี้</span></div><div class="stat"><b id="evalN">0</b><span>ประเมินแล้ววันนี้</span></div><div class="stat"><b id="avg">-</b><span>คะแนนเฉลี่ยวันนี้</span></div></div>
+<div class="card adminOnly" id="adminPanel" style="margin-bottom:14px">
+<div class="head"><div><h2>⚙️ ศูนย์ควบคุมแอดมิน</h2><div class="desc">ติดตามรายวัน ค้นย้อนหลัง และส่งออกรายงาน</div></div><button class="btn" onclick="exportCSV()">⬇ ส่งออก CSV</button></div>
+<div class="card" style="margin:10px 0 14px;background:#f7fbff">
+<h2>🎓 ปีการศึกษา / ภาคเรียน</h2>
+<div class="g2"><div><label>ภาคเรียนที่กำลังดู</label><select id="termSelect" onchange="changeTerm()"></select></div>
+<div><label>สถานะ</label><div id="termStatus" class="info">ภาคเรียนปัจจุบัน</div></div></div>
+<div class="actions" style="justify-content:flex-start"><button class="btn" onclick="openTermCreator()">➕ เพิ่มภาคเรียน</button></div>
+<div id="termCreator" style="display:none;margin-top:10px"><div class="g2">
+<div><label>ภาคเรียน</label><select id="newSem" onchange="autoTermDates()"><option value="1">1</option><option value="2">2</option></select></div>
+<div><label>ปีการศึกษา (พ.ศ.)</label><input id="newYear" type="number" value="2570" onchange="autoTermDates()"></div>
+<div><label>วันเริ่มภาคเรียน</label><input id="newStart" type="date"><div class="desc">ค่าอัตโนมัติ: เทอม 1 = 16 พ.ค. / เทอม 2 = 1 พ.ย.</div></div>
+<div><label>วันสิ้นสุดภาคเรียน</label><input id="newEnd" type="date"></div>
+</div><button class="btn primary" onclick="saveNewTerm()">บันทึกภาคเรียนใหม่</button></div>
+</div><div class="g2"><div><label>ดูข้อมูลวันที่</label><input type="date" id="adminDate" onchange="refreshAdmin()"></div><div><label>ค้นหาครู/พื้นที่</label><input id="adminSearch" placeholder="เช่น สมชาย หรือ 12" oninput="renderAdminRows()"></div></div>
+<div class="stats" style="margin:12px 0 4px"><div class="stat"><b id="doneN">0</b><span>ลงพื้นที่</span></div><div class="stat"><b id="busyN">0</b><span>ติดภารกิจ</span></div><div class="stat"><b id="pendingN">-</b><span>พื้นที่ยังไม่มี Check In</span></div><div class="stat"><b id="adminAvg">-</b><span>คะแนนเฉลี่ย</span></div></div>
+<div class="card" style="margin:14px 0;background:#f8fcff">
+<h2>📊 สรุปผลรายสัปดาห์ / รายเดือน</h2>
+<div class="desc">เลือกดูสัปดาห์ที่ 1, 2, 3... ตามลำดับของภาคเรียน หรือสรุปเป็นรายเดือน</div>
+<div class="g2">
+<div><label>รายสัปดาห์</label><select id="weekSelect" onchange="loadPeriodReport('week')"></select></div>
+<div><label>รายเดือน</label><select id="monthSelect" onchange="loadPeriodReport('month')"></select></div>
+</div>
+<div class="actions" style="justify-content:flex-start"><button class="btn" onclick="loadPeriodReport('week')">📅 สรุปรายสัปดาห์</button><button class="btn" onclick="loadPeriodReport('month')">🗓️ สรุปรายเดือน</button><button class="btn" onclick="exportPeriodCSV()">⬇ ส่งออกสรุป</button></div>
+<div class="stats" style="margin-top:12px"><div class="stat"><b id="rpChecks">0</b><span>Check In</span></div><div class="stat"><b id="rpBusy">0</b><span>ติดภารกิจ</span></div><div class="stat"><b id="rpEval">0</b><span>ครั้งที่ตรวจ</span></div><div class="stat"><b id="rpAvg">-</b><span>คะแนนเฉลี่ย</span></div></div>
+<div id="periodTitle" class="info">เลือกช่วงเวลาที่ต้องการสรุป</div>
+<div style="overflow:auto"><table><thead><tr><th>พื้นที่</th><th>Check In</th><th>ติดภารกิจ</th><th>ตรวจ</th><th>คะแนนเฉลี่ย</th></tr></thead><tbody id="periodRows"></tbody></table></div>
+</div><div style="overflow:auto"><table><thead><tr><th>เวลา/วันที่</th><th>ครู</th><th>ห้อง</th><th>พื้นที่</th><th>สถานะ</th><th>ภาพ</th></tr></thead><tbody id="adminRows"></tbody></table></div>
+</div>
+<div class="layout">
+<div class="card"><h2>🗺️ แผนผังทำความสะอาด</h2><div class="desc">เลือกพื้นที่ 1–14 เพื่อเปิดข้อมูลและประเมิน</div><img class="map" src="assets/area-map.jpg"></div>
+<div id="managementPanel"><div class="card"><h2>เขตพื้นที่ 1–14</h2><div class="desc">กดพื้นที่เพื่อเปิดแบบประเมิน</div><div class="areas" id="areas"></div></div>
+<div class="card" style="margin-top:14px"><h2>สถานะวันนี้</h2><div style="overflow:auto"><table><thead><tr><th>พื้นที่</th><th>Check In</th><th>ประเมิน</th><th>คะแนน</th></tr></thead><tbody id="rows"></tbody></table></div></div></div>
+</div></main>
+
+<div class="modal" id="checkM"><div class="box"><div class="head"><h2>📍 ครู Check In</h2><button class="x" onclick="closeM('checkM')">×</button></div>
+<div class="g2"><div><label>ชื่อคุณครู *</label><input id="teacher" placeholder="พิมพ์ชื่อ-สกุล"></div><div><label>ห้องที่ปรึกษา *</label><select id="room"><option value="">เลือกห้อง</option><option>ชั้นมัธยมศึกษาปีที่ 1/1</option>
+<option>ชั้นมัธยมศึกษาปีที่ 1/2</option>
+<option>ชั้นมัธยมศึกษาปีที่ 1/3</option>
+<option>ชั้นมัธยมศึกษาปีที่ 2/1</option>
+<option>ชั้นมัธยมศึกษาปีที่ 2/2</option>
+<option>ชั้นมัธยมศึกษาปีที่ 2/3</option>
+<option>ชั้นมัธยมศึกษาปีที่ 3/1</option>
+<option>ชั้นมัธยมศึกษาปีที่ 3/2</option>
+<option>ชั้นมัธยมศึกษาปีที่ 4/1</option>
+<option>ชั้นมัธยมศึกษาปีที่ 4/2</option>
+<option>ชั้นมัธยมศึกษาปีที่ 5/1</option>
+<option>ชั้นมัธยมศึกษาปีที่ 5/2</option>
+<option>ชั้นมัธยมศึกษาปีที่ 6/1</option>
+<option>ชั้นมัธยมศึกษาปีที่ 6/2</option>
+<option>ไม่มีชั้นที่ปรึกษา</option></select></div></div>
+<div class="g2"><div><label>พื้นที่รับผิดชอบ *</label><select id="area"></select></div><div><label>วันที่ *</label><input type="date" id="date"></div></div>
+<label>ภาพหลักฐาน 1–2 รูป</label><input type="file" id="photos" accept="image/*" multiple>
+<label>กรณีไม่สามารถลงพื้นที่ได้</label><select id="reason"><option value="">ลงพื้นที่ตามปกติ</option><option>ไปราชการ</option><option>เวรประจำวัน</option><option>ติดภารกิจส่วนตัว</option><option>อื่น ๆ</option></select>
+<label>หมายเหตุ</label><textarea id="note"></textarea><div class="actions"><button class="btn" onclick="submitCheck()">ส่ง Check In</button></div></div></div>
+
+<div class="modal" id="evalM"><div class="box"><div class="head"><h2>🔎 แบบประเมินเขตพื้นที่</h2><button class="x" onclick="closeM('evalM')">×</button></div>
+<div class="g2"><div><label>ชื่อผู้ตรวจ *</label><input id="inspector"></div><div><label>วันที่ตรวจ *</label><input type="date" id="edate"></div></div>
+<label>พื้นที่ *</label><select id="earea" onchange="linkedCheckin()"></select><div class="info" id="linked">เลือกพื้นที่เพื่อดู Check In</div>
+<div id="criteria"></div><label>ข้อเสนอแนะ</label><textarea id="enote"></textarea><div class="info" id="scoreBox">คะแนน 25/25 • 100%</div>
+<div class="actions"><button class="btn" onclick="submitEval()">บันทึกผลประเมิน</button></div></div></div><div id="status"></div>
+<script src="config.js"></script><script>
+"use strict";
+let selectedRole="teacher", currentRole=null, activeTerm="2-2569";
+let TERMS=[{id:"2-2569",semester:2,year:2569,start:"2026-11-01",end:"2027-03-31",active:true}];
+let adminCache={checkins:[],evaluations:[]}, periodCache={checkins:[],evaluations:[],label:""};
+const ROLE_LABELS={teacher:"ครู",inspector:"ผู้ตรวจ",admin:"แอดมิน"};
+const AREAS=Array.from({length:14},(_,i)=>i+1);
+const CR=["ความสะอาด","ความเป็นระเบียบเรียบร้อย","การจัดเก็บขยะ","สภาพแวดล้อมและความสวยงาม","ความสม่ำเสมอในการดูแล"];
+const $=id=>document.getElementById(id);
+const localGet=k=>JSON.parse(localStorage.getItem(k)||"[]");
+const localSet=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
+const today=()=>new Date().toISOString().slice(0,10);
+
+function pickRole(r,el){selectedRole=r;document.querySelectorAll(".roleBtn").forEach(x=>x.classList.remove("sel"));el.classList.add("sel");$("loginPassword").value="";updatePinDots()}
+async function api(action,data={}){
+ if(!window.APP_CONFIG||!window.APP_CONFIG.API_URL)return null;
+ const r=await fetch(APP_CONFIG.API_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({action,token:sessionStorage.getItem("ld_token")||"",termId:activeTerm,...data})});
+ const j=await r.json(); if(j&&j.error==="Unauthorized"){logout();throw new Error("เซสชันหมดอายุ กรุณาเข้าสู่ระบบใหม่")} return j;
+}
+function updatePinDots(){const n=$("loginPassword").value.length;document.querySelectorAll("#pinDots span").forEach((d,i)=>d.textContent=i<n?"●":"○")}
+function pinKey(n){const el=$("loginPassword");if(el.value.length<6){el.value+=n;updatePinDots()}}
+function pinBack(){const el=$("loginPassword");el.value=el.value.slice(0,-1);updatePinDots()}
+async function login(){
+ const pin=String($("loginPassword").value||"").trim();
+ if(!/^\d{6}$/.test(pin))return alert("กรุณากรอก PIN ตัวเลข 6 หลัก");
+ try{
+  if(window.APP_CONFIG&&window.APP_CONFIG.API_URL){
+   const r=await api("login",{role:selectedRole,pin});if(!r||!r.ok)return alert("PIN ไม่ถูกต้องสำหรับสิทธิ์ "+ROLE_LABELS[selectedRole]+" กรุณาตรวจบทบาทที่เลือก");
+   sessionStorage.setItem("ld_token",r.token||"");
+  }else{
+   const cfg=(window.APP_CONFIG&&window.APP_CONFIG.DEMO_ROLE_PASSWORDS)||{};if(pin!==cfg[selectedRole])return alert("PIN ไม่ถูกต้องสำหรับสิทธิ์ "+ROLE_LABELS[selectedRole]+" กรุณาตรวจบทบาทที่เลือก");
+  }
+  currentRole=selectedRole;sessionStorage.setItem("ld_role",currentRole);$("loginScreen").style.display="none";
+  await loadTerms();applyRole();await refresh();
+ }catch(e){alert("เข้าสู่ระบบไม่สำเร็จ: "+e.message)}
+}
+function logout(){sessionStorage.removeItem("ld_role");sessionStorage.removeItem("ld_token");currentRole=null;$("loginPassword").value="";updatePinDots();$("loginScreen").style.display="grid"}
+function guard(a){if(!a.includes(currentRole)){alert("บัญชีนี้ไม่มีสิทธิ์ใช้งานส่วนนี้");return false}return true}
+function applyRole(){
+ $("roleTag").textContent="สิทธิ์: "+ROLE_LABELS[currentRole];
+ const t=currentRole==="teacher",i=currentRole==="inspector",a=currentRole==="admin";
+ $("checkBtn").style.display=(t||a)?"block":"none";$("evalBtn").style.display=(i||a)?"block":"none";
+ $("statsPanel").style.display=t?"none":"grid";$("managementPanel").style.display=t?"none":"block";
+ document.querySelectorAll(".adminOnly").forEach(x=>x.style.display=a?"block":"none");
+ if(a)refreshAdmin();
+}
+function toast(t){$("status").textContent=t;$("status").style.display="block";setTimeout(()=>$("status").style.display="none",2600)}
+function openM(id){$(id).classList.add("show")} function closeM(id){$(id).classList.remove("show")}
+function chooseArea(n){if(!guard(["inspector","admin"]))return;$("earea").value=n;openEval()}
+function openEval(){if(!guard(["inspector","admin"]))return;openM("evalM");linkedCheckin()}
+function score(){const s=[...document.querySelectorAll(".score")].reduce((a,x)=>a+Number(x.value),0);$("scoreBox").textContent=`คะแนน ${s}/25 • ${Math.round(s/25*100)}%`}
+async function compressImage(file){return new Promise((resolve,reject)=>{const img=new Image(),r=new FileReader();r.onload=e=>img.src=e.target.result;r.onerror=reject;img.onload=()=>{const max=1600,sc=Math.min(1,max/Math.max(img.width,img.height)),c=document.createElement("canvas");c.width=Math.round(img.width*sc);c.height=Math.round(img.height*sc);c.getContext("2d").drawImage(img,0,0,c.width,c.height);resolve({name:file.name.replace(/\.[^.]+$/,"")+".jpg",mime:"image/jpeg",data:c.toDataURL("image/jpeg",.78).split(",")[1]})};img.onerror=reject;r.readAsDataURL(file)})}
+
+async function submitCheck(){
+ if(!guard(["teacher","admin"]))return;
+ if(!$("teacher").value||!$("room").value||!$("area").value||!$("date").value)return alert("กรุณากรอกข้อมูลให้ครบ");
+ if($("photos").files.length>2)return alert("แนบรูปได้ไม่เกิน 2 รูป");
+ try{
+  toast("กำลังบันทึก...");
+  const images=[];for(const f of [...$("photos").files])images.push(await compressImage(f));
+  const payload={date:$("date").value,area:+$("area").value,teacher:$("teacher").value.trim(),room:$("room").value,reason:$("reason").value,note:$("note").value.trim(),images};
+  const res=await api("checkin",payload);
+  if(res&&!res.ok)throw new Error(res.error||"บันทึกไม่สำเร็จ");
+  if(!res){let a=localGet("ld_check");const ix=a.findIndex(x=>x.termId===activeTerm&&x.date===payload.date&&+x.area===payload.area&&x.teacher===payload.teacher);const item={...payload,termId:activeTerm,images:[],photoUrls:[]};if(ix>=0)a[ix]=item;else a.push(item);localSet("ld_check",a)}
+  closeM("checkM");$("photos").value="";toast(res&&res.replaced?"อัปเดต Check In เป็นรายการล่าสุดแล้ว ✓":"Check In เรียบร้อย ✓");await refresh();
+ }catch(e){alert("บันทึกไม่สำเร็จ: "+e.message)}
+}
+async function linkedCheckin(){
+ if(!$("earea").value)return $("linked").textContent="เลือกพื้นที่เพื่อดู Check In";
+ try{
+  const res=await api("checkinForArea",{date:$("edate").value,area:+$("earea").value});
+  const x=res?res.data:[...localGet("ld_check")].reverse().find(v=>(v.termId||"2-2569")===activeTerm&&v.date===$("edate").value&&+v.area===+$("earea").value);
+  $("linked").innerHTML=x?`<b>✓ พบ Check In</b><br>ผู้รับผิดชอบ: ${esc(x.teacher)}<br>ห้อง: ${esc(x.room)}<br>${(x.photoUrls||[]).map((u,i)=>`<a href="${u}" target="_blank" rel="noopener">🖼️ ภาพ ${i+1}</a>`).join(" &nbsp; ")}`:"<b>ยังไม่พบ Check In ในวันที่เลือก</b>";
+ }catch(e){$("linked").textContent="ไม่สามารถโหลด Check In ได้"}
+}
+async function submitEval(){
+ if(!guard(["inspector","admin"]))return;
+ if(!$("inspector").value||!$("earea").value||!$("edate").value)return alert("กรุณาระบุผู้ตรวจ วันที่ และพื้นที่");
+ const scores=[...document.querySelectorAll(".score")].map(x=>+x.value),sum=scores.reduce((a,b)=>a+b,0),payload={date:$("edate").value,area:+$("earea").value,inspector:$("inspector").value.trim(),scores,sum,pct:Math.round(sum/25*100),note:$("enote").value.trim()};
+ try{const res=await api("evaluation",payload);if(res&&!res.ok)throw new Error(res.error||"บันทึกไม่สำเร็จ");if(!res){let a=localGet("ld_eval");a.push({...payload,termId:activeTerm});localSet("ld_eval",a)}closeM("evalM");toast("บันทึกผลประเมินเรียบร้อย ✓");await refresh()}catch(e){alert("บันทึกไม่สำเร็จ: "+e.message)}
+}
+function esc(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+async function refresh(){
+ if(!currentRole||currentRole==="teacher")return;
+ const d=today();let c=[],e=[];
+ try{const r=await api("dashboard",{date:d});if(r&&r.ok){c=r.checkins||[];e=r.evaluations||[]}else throw 0}catch(_){c=localGet("ld_check").filter(x=>(x.termId||"2-2569")===activeTerm&&x.date===d);e=localGet("ld_eval").filter(x=>(x.termId||"2-2569")===activeTerm&&x.date===d)}
+ $("checkN").textContent=new Set(c.map(x=>+x.area)).size;$("evalN").textContent=new Set(e.map(x=>+x.area)).size;$("avg").textContent=e.length?Math.round(e.reduce((a,x)=>a+(+x.pct),0)/e.length)+"%":"-";
+ $("rows").innerHTML=AREAS.map(a=>{const cc=c.find(x=>+x.area===a),ee=e.find(x=>+x.area===a);return `<tr><td>พื้นที่ ${a}</td><td><span class="pill ${cc?(cc.reason?"orange":"blue"):"gray"}">${cc?(cc.reason?"ติดภารกิจ":"Check In แล้ว"):"ยังไม่ Check In"}</span></td><td><span class="pill ${ee?"yes":"gray"}">${ee?"ตรวจแล้ว":"ยังไม่ตรวจ"}</span></td><td>${ee?ee.pct+"%":"-"}</td></tr>`}).join("");
+}
+async function refreshAdmin(){
+ if(currentRole!=="admin")return;
+ const d=$("adminDate").value||today();
+ try{const r=await api("adminDaily",{date:d});if(r&&r.ok)adminCache={checkins:r.checkins||[],evaluations:r.evaluations||[]};else throw 0}catch(_){adminCache={checkins:localGet("ld_check").filter(x=>(x.termId||"2-2569")===activeTerm&&x.date===d),evaluations:localGet("ld_eval").filter(x=>(x.termId||"2-2569")===activeTerm&&x.date===d)}}
+ const c=adminCache.checkins,e=adminCache.evaluations;$("doneN").textContent=c.filter(x=>!x.reason).length;$("busyN").textContent=c.filter(x=>x.reason).length;$("pendingN").textContent=Math.max(0,14-new Set(c.map(x=>+x.area)).size);$("adminAvg").textContent=e.length?Math.round(e.reduce((a,x)=>a+(+x.pct),0)/e.length)+"%":"-";renderAdminRows()
+}
+function renderAdminRows(){const q=$("adminSearch").value.toLowerCase(),c=adminCache.checkins.filter(x=>!q||String(x.teacher).toLowerCase().includes(q)||String(x.area).includes(q)||String(x.room).toLowerCase().includes(q));$("adminRows").innerHTML=c.map(x=>`<tr><td>${esc(x.date)}</td><td>${esc(x.teacher)}</td><td>${esc(x.room)}</td><td>${esc(x.area)}</td><td><span class="pill ${x.reason?"orange":"yes"}">${esc(x.reason||"ลงพื้นที่")}</span></td><td>${(x.photoUrls||[]).map((u,i)=>`<a href="${u}" target="_blank" rel="noopener">ภาพ ${i+1}</a>`).join(" ")||"-"}</td></tr>`).join("")||'<tr><td colspan="6">ยังไม่มีข้อมูล</td></tr>'}
+function csvDownload(rows,name){const csv="\ufeff"+rows.map(r=>r.map(v=>`"${String(v??"").replaceAll('"','""')}"`).join(",")).join("\n"),a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
+function exportCSV(){const rows=[["ภาคเรียน",activeTerm],["วันที่","ครู","ห้อง","พื้นที่","สถานะ","หมายเหตุ","ภาพ"]];adminCache.checkins.forEach(x=>rows.push([x.date,x.teacher,x.room,x.area,x.reason||"ลงพื้นที่",x.note||"",(x.photoUrls||[]).join(" ")]));csvDownload(rows,`lamduan-${activeTerm}-${$("adminDate").value||"report"}.csv`)}
+
+function autoDates(sem,be){const y=be-543;return sem===1?{start:`${y}-05-16`,end:`${y}-10-31`}:{start:`${y}-11-01`,end:`${y+1}-03-31`}}
+function normalizeDate(v){if(!v)return"";if(typeof v==="string")return v.slice(0,10);const d=new Date(v);return Number.isNaN(d.getTime())?"":d.toISOString().slice(0,10)}
+async function loadTerms(){
+ if(currentRole==="admin"&&window.APP_CONFIG&&window.APP_CONFIG.API_URL){
+  try{const r=await api("listTerms");if(r&&r.ok&&r.terms&&r.terms.length)TERMS=r.terms.map(t=>({...t,start:normalizeDate(t.start),end:normalizeDate(t.end)}));else await ensureDefaultTerm()}catch(_){}
+ }else{const saved=JSON.parse(localStorage.getItem("ld_terms")||"null");if(saved&&saved.length)TERMS=saved}
+ const preferred=localStorage.getItem("ld_active_term"),serverActive=TERMS.find(t=>t.active);activeTerm=(preferred&&TERMS.some(t=>t.id===preferred))?preferred:(serverActive?serverActive.id:TERMS[0].id);
+ initTerms();
+}
+async function ensureDefaultTerm(){if(currentRole!=="admin")return;const t=TERMS[0];const r=await api("saveTerm",{id:t.id,semester:t.semester,year:t.year,start:t.start,end:t.end});if(r&&r.ok){const q=await api("listTerms");if(q&&q.ok&&q.terms.length)TERMS=q.terms}}
+function initTerms(){$("termSelect").innerHTML=TERMS.map(t=>`<option value="${t.id}" ${t.id===activeTerm?"selected":""}>ภาคเรียนที่ ${t.semester}/${t.year}</option>`).join("");updateTermUI()}
+function term(){return TERMS.find(t=>t.id===activeTerm)||TERMS[0]}
+function fmtDate(s){return new Date(s+"T00:00:00").toLocaleDateString("th-TH",{day:"numeric",month:"short",year:"numeric"})}
+function updateTermUI(){const t=term();$("headerTerm").textContent=`ภาคเรียนที่ ${t.semester} ปีการศึกษา ${t.year}`;if($("termStatus"))$("termStatus").innerHTML=`<b>${t.active?"ภาคเรียนปัจจุบัน":"ดูข้อมูลย้อนหลัง"}</b><br>${fmtDate(t.start)} – ${fmtDate(t.end)}`;buildPeriodOptions(t)}
+async function changeTerm(){activeTerm=$("termSelect").value;localStorage.setItem("ld_active_term",activeTerm);updateTermUI();await refresh();await refreshAdmin()}
+function openTermCreator(){$("termCreator").style.display=$("termCreator").style.display==="none"?"block":"none";if($("termCreator").style.display!=="none")autoTermDates()}
+function autoTermDates(){const sem=+$("newSem").value,be=+$("newYear").value;if(!be)return;const d=autoDates(sem,be);$("newStart").value=d.start;$("newEnd").value=d.end}
+async function saveNewTerm(){
+ const semester=+$("newSem").value,year=+$("newYear").value,start=$("newStart").value,end=$("newEnd").value,id=`${semester}-${year}`;
+ if(!year||!start||!end||end<start)return alert("กรุณากรอกข้อมูลภาคเรียนให้ครบถ้วน");
+ if(TERMS.some(t=>t.id===id))return alert("มีภาคเรียนนี้อยู่แล้ว");
+ try{
+  if(window.APP_CONFIG&&window.APP_CONFIG.API_URL){const r=await api("saveTerm",{id,semester,year,start,end});if(!r||!r.ok)throw new Error(r&&r.error||"บันทึกไม่สำเร็จ");const q=await api("listTerms");TERMS=q.terms.map(t=>({...t,start:normalizeDate(t.start),end:normalizeDate(t.end)}))}
+  else{TERMS.forEach(t=>t.active=false);TERMS.push({id,semester,year,start,end,active:true});localStorage.setItem("ld_terms",JSON.stringify(TERMS))}
+  activeTerm=id;localStorage.setItem("ld_active_term",id);initTerms();$("termCreator").style.display="none";toast(`เพิ่มภาคเรียน ${id} เรียบร้อย ✓`)
+ }catch(e){alert("เพิ่มภาคเรียนไม่สำเร็จ: "+e.message)}
+}
+function buildPeriodOptions(t){
+ let start=new Date(t.start+"T00:00:00"),end=new Date(t.end+"T00:00:00"),opts="",n=1,d=new Date(start);
+ while(d<=end){let e=new Date(d);e.setDate(e.getDate()+6);if(e>end)e=new Date(end);opts+=`<option value="${isoLocal(d)}|${isoLocal(e)}">สัปดาห์ที่ ${n} (${d.toLocaleDateString("th-TH",{day:"numeric",month:"short"})}–${e.toLocaleDateString("th-TH",{day:"numeric",month:"short"})})</option>`;d.setDate(d.getDate()+7);n++}
+ $("weekSelect").innerHTML=opts;let mo="",cur=new Date(start.getFullYear(),start.getMonth(),1);while(cur<=end){const y=cur.getFullYear(),m=cur.getMonth();mo+=`<option value="${y}-${String(m+1).padStart(2,"0")}">${cur.toLocaleDateString("th-TH",{month:"long",year:"numeric"})}</option>`;cur=new Date(y,m+1,1)}$("monthSelect").innerHTML=mo
+}
+function isoLocal(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`}
+async function loadPeriodReport(type){
+ if(currentRole!=="admin")return;let start,end,label;
+ if(type==="week"){const v=$("weekSelect").value.split("|");start=v[0];end=v[1];label=$("weekSelect").options[$("weekSelect").selectedIndex].text}
+ else{const ym=$("monthSelect").value,[y,m]=ym.split("-").map(Number),t=term();start=ym+"-01";end=isoLocal(new Date(y,m,0));if(start<t.start)start=t.start;if(end>t.end)end=t.end;label=$("monthSelect").options[$("monthSelect").selectedIndex].text}
+ try{const r=await api("periodReport",{start,end});if(r&&r.ok)periodCache={checkins:r.checkins||[],evaluations:r.evaluations||[],label};else{const c=localGet("ld_check").filter(x=>(x.termId||"2-2569")===activeTerm&&x.date>=start&&x.date<=end),e=localGet("ld_eval").filter(x=>(x.termId||"2-2569")===activeTerm&&x.date>=start&&x.date<=end);periodCache={checkins:c,evaluations:e,label}}}catch(_){periodCache={checkins:[],evaluations:[],label}}renderPeriod()
+}
+function renderPeriod(){const c=periodCache.checkins,e=periodCache.evaluations;$("periodTitle").innerHTML="<b>"+esc(periodCache.label)+"</b>";$("rpChecks").textContent=c.length;$("rpBusy").textContent=c.filter(x=>x.reason).length;$("rpEval").textContent=e.length;$("rpAvg").textContent=e.length?Math.round(e.reduce((a,x)=>a+(+x.pct),0)/e.length)+"%":"-";$("periodRows").innerHTML=AREAS.map(a=>{const ca=c.filter(x=>+x.area===a),ea=e.filter(x=>+x.area===a),av=ea.length?Math.round(ea.reduce((s,x)=>s+(+x.pct),0)/ea.length)+"%":"-";return `<tr><td>พื้นที่ ${a}</td><td>${ca.length}</td><td>${ca.filter(x=>x.reason).length}</td><td>${ea.length}</td><td>${av}</td></tr>`}).join("")}
+function exportPeriodCSV(){const rows=[["ภาคเรียน",activeTerm],["ช่วงเวลา",periodCache.label],[],["พื้นที่","Check In","ติดภารกิจ","ตรวจ","คะแนนเฉลี่ย"]];AREAS.forEach(a=>{const c=periodCache.checkins.filter(x=>+x.area===a),e=periodCache.evaluations.filter(x=>+x.area===a);rows.push([a,c.length,c.filter(x=>x.reason).length,e.length,e.length?Math.round(e.reduce((s,x)=>s+(+x.pct),0)/e.length)+"%":"-"])});csvDownload(rows,`lamduan-summary-${activeTerm}.csv`)}
+
+function initUI(){
+ const opts='<option value="">เลือกพื้นที่</option>'+AREAS.map(x=>`<option value="${x}">เขตพื้นที่ ${x}</option>`).join("");$("area").innerHTML=$("earea").innerHTML=opts;
+ $("areas").innerHTML=AREAS.map(x=>`<div class="area" onclick="chooseArea(${x})">พื้นที่ ${x}</div>`).join("");
+ $("criteria").innerHTML=CR.map((x,i)=>`<div class="criterion"><b>${i+1}. ${x}</b><select class="score" onchange="score()"><option value="5">5 ดีเยี่ยม</option><option value="4">4 ดีมาก</option><option value="3">3 ดี</option><option value="2">2 พอใช้</option><option value="1">1 ควรปรับปรุง</option></select></div>`).join("");
+ $("date").value=$("edate").value=$("adminDate").value=today();score();initTerms();
+}
+initUI();
+const savedRole=sessionStorage.getItem("ld_role");
+if(["teacher","inspector","admin"].includes(savedRole)){currentRole=savedRole;$("loginScreen").style.display="none";loadTerms().then(()=>{applyRole();refresh()})}
+</script></body></html>
