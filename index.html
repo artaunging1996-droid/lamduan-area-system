@@ -98,7 +98,7 @@ label{display:block;font-size:13px;font-weight:800;margin:10px 0 5px}input,selec
 </div></main>
 
 <div class="modal" id="checkM"><div class="box"><div class="head"><h2>📍 ครู Check In</h2><button class="x" onclick="closeM('checkM')">×</button></div>
-<div class="g2"><div><label>ชื่อคุณครู *</label><input id="teacher" placeholder="พิมพ์ชื่อ-สกุล"></div><div><label>ห้องที่ปรึกษา *</label><select id="room"><option value="">เลือกห้อง</option><option>ชั้นมัธยมศึกษาปีที่ 1/1</option>
+<div class="g2"><div><label>ชื่อคุณครู *</label><select id="teacher"><option value="">เลือกรายชื่อคุณครู</option><option>นางกนกวรรณ  ผลเจริญ</option><option>นายนาวิณ  แกกสันเทียะ</option><option>นางนิชดา  กรองทอง</option><option>นางสาวนิศารัตน์  เฉียดรัมย์</option><option>นางสุภาพร  มฤทุกุล</option><option>นางสาวสุวรรณี  สิลินทบูล</option><option>นางสาวพิไลพร  สายทะเล</option><option>นายณัฐกรณ์  ช่อมะลิ</option><option>นายศรายุทธ  วิชัด</option><option>นายกัฎภัฑข์ มั่นมี</option><option>นางสาวกาญจนา  ทองบุตร</option><option>นางสาวดารารัตน์  เยรัมย์</option><option>นายจิรภัทร  เลิศคุณาพร</option><option>นางสาวอริสา  สีแก้ว</option><option>นางสาวดิศรินทร์  กองมณี</option><option>นายสิทธิชน  จักรชุม</option><option>นางสาวธัญพิมล ทองดีเลิศ</option><option>นางสาวฐิตารีย์ วาปีทำ</option><option>นายภัทรภณ  คบทองหลาง</option><option>นางสาววริษฐา จำปาจีน</option><option>นางสาวจีราพัชร  เธียรจรัสวงศ์</option><option>นางสาวยุวดี  จันทร์สอน</option><option>นางสาวสุนีย์ คร่ำทอง</option><option>นายชัยทวี แก้วหอม</option></select></div><div><label>ห้องที่ปรึกษา *</label><select id="room"><option value="">เลือกห้อง</option><option>ชั้นมัธยมศึกษาปีที่ 1/1</option>
 <option>ชั้นมัธยมศึกษาปีที่ 1/2</option>
 <option>ชั้นมัธยมศึกษาปีที่ 1/3</option>
 <option>ชั้นมัธยมศึกษาปีที่ 2/1</option>
@@ -113,7 +113,7 @@ label{display:block;font-size:13px;font-weight:800;margin:10px 0 5px}input,selec
 <option>ชั้นมัธยมศึกษาปีที่ 6/1</option>
 <option>ชั้นมัธยมศึกษาปีที่ 6/2</option>
 <option>ไม่มีชั้นที่ปรึกษา</option></select></div></div>
-<div class="g2"><div><label>พื้นที่รับผิดชอบ *</label><select id="area"></select></div><div><label>วันที่ *</label><input type="date" id="date"></div></div>
+<div class="g2"><div><label>พื้นที่รับผิดชอบ *</label><select id="area"></select></div><div><label>วันที่ Check In *</label><input type="date" id="date" readonly><div class="desc">ระบบกำหนดเป็นวันที่ปัจจุบันอัตโนมัติ</div></div></div>
 <label>ภาพหลักฐาน 1–2 รูป</label><input type="file" id="photos" accept="image/*" multiple>
 <label>กรณีไม่สามารถลงพื้นที่ได้</label><select id="reason"><option value="">ลงพื้นที่ตามปกติ</option><option>ไปราชการ</option><option>เวรประจำวัน</option><option>ติดภารกิจส่วนตัว</option><option>อื่น ๆ</option></select>
 <label>หมายเหตุ</label><textarea id="note"></textarea><div class="actions"><button class="btn" onclick="submitCheck()">ส่ง Check In</button></div></div></div>
@@ -268,9 +268,10 @@ function initUI(){
  const opts='<option value="">เลือกพื้นที่</option>'+AREAS.map(x=>`<option value="${x}">เขตพื้นที่ ${x}</option>`).join("");$("area").innerHTML=$("earea").innerHTML=opts;
  $("areas").innerHTML=AREAS.map(x=>`<div class="area" onclick="chooseArea(${x})">พื้นที่ ${x}</div>`).join("");
  $("criteria").innerHTML=CR.map((x,i)=>`<div class="criterion"><b>${i+1}. ${x}</b><select class="score" onchange="score()"><option value="5">5 ดีเยี่ยม</option><option value="4">4 ดีมาก</option><option value="3">3 ดี</option><option value="2">2 พอใช้</option><option value="1">1 ควรปรับปรุง</option></select></div>`).join("");
- $("date").value=$("edate").value=$("adminDate").value=today();score();initTerms();
+ $("date").value=$("edate").value=$("adminDate").value=today();$("date").min=today();$("date").max=today();score();initTerms();
 }
 initUI();
 const savedRole=sessionStorage.getItem("ld_role");
 if(["teacher","inspector","admin"].includes(savedRole)){currentRole=savedRole;$("loginScreen").style.display="none";loadTerms().then(()=>{applyRole();refresh()})}
+setInterval(()=>{if(currentRole==="inspector"||currentRole==="admin")refresh()},30000);
 </script></body></html>
